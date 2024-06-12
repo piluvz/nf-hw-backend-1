@@ -29,8 +29,21 @@ class EventService {
       await newEvent.save();
       return newEvent;
     }
-  
+
+    // async getEventsByCity(city: string): Promise<IEvent[]> {
+    //   const events = await EventModel.find({ location: city }).exec();
+    //   return events;
+    // }
     
+    async getEventsByCity(city: string, startIndex: number, limit: number): Promise<IEvent[]> {
+      const events = await EventModel.find({ location: city }).skip(startIndex).limit(limit).exec();
+      return events;
+  }
+  
+    async getTotalEventsByCity(city: string): Promise<number> {
+        return await EventModel.countDocuments({ location: city }).exec();
+    }
+  
   }
   
   export default EventService;

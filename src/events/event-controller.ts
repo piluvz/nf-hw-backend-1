@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { CreateEventDto } from './dtos/CreateEvent.dot';
 import EventService from './event-service';
 
+import { Pagination } from '../auth/types/response';
+
 class EventController {
     private eventService : EventService;
 
@@ -20,19 +22,60 @@ class EventController {
         }
       }
 
-
+    // getEvents = async (req: Request, res: Response): Promise<void> => {
+    //     try {
+    //         const userCity  = (req as any).user.city;
+    //         if (!userCity) {
+    //             res.status(400).json({ message: 'User city not found in token' , userCity: (req as any).user});
+    //             return;
+    //         }
+    //         const events = await this.eventService.getEventsByCity(userCity);
+    //         res.status(200).json(events);
+    //     } catch (error: any) {
+    //         res.status(500).send({ error: error.message });
+    //     }
+    // }
 
     getEvents = async (req: Request, res: Response): Promise<void> => {
-        try {
-          const events = await this.eventService.getEvents();
-          res.status(200).json(events);
-        } catch (error: any) {
+      try {
+          const userCity = (req as any).user.city;
+          if (!userCity) {
+              res.status(400).json({ message: 'User city not found in token' });
+              return;
+          }
+  
+          const page = parseInt(req.query.page as string) || 1;
+          const limit = parseInt(req.query.limit as string) || 1;
+  
+          const startIndex = (page - 1) * limit;
+          const endIndex = page * limit;
+  
+          const totalEvents = await this.eventService.getTotalEventsByCity(userCity);
+  
+          const events = await this.eventService.getEventsByCity(userCity, startIndex, limit);
+  
+          const pagination: Pagination = {};
+  
+          if (endIndex < totalEvents) {
+              pagination.next = {
+                  page: page + 1,
+                  limit: limit
+              };
+          }
+  
+          if (startIndex > 0) {
+              pagination.prev = {
+                  page: page - 1,
+                  limit: limit
+              };
+          }
+  
+          res.status(200).json({ events, pagination });
+      } catch (error: any) {
           res.status(500).send({ error: error.message });
-        }
       }
-
-    
-
+    }
+  
 
     getEventById = async (req: Request, res: Response): Promise<void> => {
         try {
