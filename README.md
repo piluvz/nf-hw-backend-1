@@ -88,4 +88,5 @@ This setup provides a structured way to build a Node.js application using TypeSc
 Feel free to customize the structure and add more features as per your requirements. Happy coding! 💻
 
 ## Link to deployed project:
-https://nf-hw-backend-1-89nu.onrender.com
+https://nf-hw-backend-1-89nu.onrender.com 
+Accomplished tasks: **Hard level**
