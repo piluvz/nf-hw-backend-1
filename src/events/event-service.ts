@@ -35,10 +35,11 @@ class EventService {
     //   return events;
     // }
     
-    async getEventsByCity(city: string, startIndex: number, limit: number): Promise<IEvent[]> {
-      const events = await EventModel.find({ location: city }).skip(startIndex).limit(limit).exec();
+    async getEventsByCity(city: string, startIndex: number, limit: number, sortBy: string, sortDirection: 'asc' | 'desc'): Promise<IEvent[]> {
+      const sortCriteria: { [key: string]: 1 | -1 } = { [sortBy]: sortDirection === 'asc' ? 1 : -1 };
+      const events = await EventModel.find({ location: city }).sort(sortCriteria).skip(startIndex).limit(limit).exec();
       return events;
-  }
+    }
   
     async getTotalEventsByCity(city: string): Promise<number> {
         return await EventModel.countDocuments({ location: city }).exec();

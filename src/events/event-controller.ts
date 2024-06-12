@@ -45,14 +45,18 @@ class EventController {
           }
   
           const page = parseInt(req.query.page as string) || 1;
-          const limit = parseInt(req.query.limit as string) || 1;
-  
+          const limit = parseInt(req.query.limit as string) || 10;
+
+          const sortBy = req.query.sortBy as string || 'name';
+          const sortDirection = req.query.sortDirection as 'asc' | 'desc' || 'asc';
+          const sort = {};
+          sort[sortBy] = sortDirection === 'desc' ? -1 : 1;
+
           const startIndex = (page - 1) * limit;
           const endIndex = page * limit;
-  
           const totalEvents = await this.eventService.getTotalEventsByCity(userCity);
   
-          const events = await this.eventService.getEventsByCity(userCity, startIndex, limit);
+          const events = await this.eventService.getEventsByCity(userCity, startIndex, limit, sortBy, sortDirection);
   
           const pagination: Pagination = {};
   
